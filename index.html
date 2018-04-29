@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+window.onload = function () {
+
+var dps = []; // dataPoints
+var chart = new CanvasJS.Chart("chartContainer", {
+	title :{
+		text: "Dynamic Data Accelorameter"
+	},
+	axisY: {
+		includeZero: false
+	},      
+	data: [{
+		type: "line",
+		dataPoints: dps
+	}]
+});
+
+var xVal = 0;
+var yVal; 
+var updateInterval = 1000;
+var dataLength = 20; // number of dataPoints visible at any point
+
+
+var updateChart = function (count) {
+
+	// Check for support for DeviceMotion events
+        // console.log('HUI');
+      window.addEventListener('devicemotion', function(event) {
+                var x = event.accelerationIncludingGravity.x;
+                var y = event.accelerationIncludingGravity.y;
+                var z = event.accelerationIncludingGravity.z;
+                var r = event.rotationRate;
+                var alpha = event.alpha;
+                var beta = event.beta;
+                var gamma = event.gamma;
+      
+
+	count = count || 1;
+
+	for (var j = 0; j < count; j++) {
+		yVal = r.alpha;
+		dps.push({
+			x: xVal,
+			y: yVal
+		});
+		xVal++;
+	}
+
+	if (dps.length > dataLength) {
+		dps.shift();
+	}
+
+	chart.render();
+	 });
+};
+
+updateChart(dataLength);
+setInterval(function(){updateChart()}, updateInterval);
+
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 370px; max-width: 920px; margin: 0px auto;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>
